@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#author: Sampath
+echo -e " Please enter the service name: "
+read -r ser
+echo "1. Select to view the status of service"
+echo "2. Select to restart the service"
+
+echo -e " select an option: "
+read -r ch
+case $ch in
+        1)
+                for i in `cat hosts`
+do
+        echo " $ser status on "$i" is"
+        ssh -q  $i <<EOF
+echo "$service status is: "
+echo " "
+echo " "
+systemctl status $ser
+EOF
+done;;
+
+        2)
+                echo " Enter your sudo password"
+                read -s SUDO_PASS
+
+                for i in `cat hosts`
+                do
+                        echo "Restarting $ser on $i"
+                        sshpass -p "SUDO_PASS" ssh -q $i "echo $SUDO_PASS | sudo -S systemctl restart $ser"
+                        #checkign the command status
+                        if [ $? -eq 0 ];
+                        then
+                                echo "Succesfully restarted $ser on $i"
+                        else
+                                echo "Failed to restart $ser on $i"
+                        fi
+                        done;;
+                        esac
+                
